@@ -12,7 +12,7 @@ const posts = async (req, res) => {
   });
   try {
     const dataToSave = await blog.save();
-    res.status(200).json(dataToSave);
+    res.status(201).json(dataToSave);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
