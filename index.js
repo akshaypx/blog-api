@@ -1,6 +1,10 @@
+//module imports
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+
+//file imports
+import router from "./src/routes/routes.js";
 
 //loading env file
 dotenv.config();
@@ -16,6 +20,8 @@ database.once("connected", () => console.log("Database connected"));
 const app = express();
 
 app.use(express.json());
+//setting api routes
+app.use("/api", router);
 
 app.listen(3000, () => {
   console.log("Server started at 3000");
