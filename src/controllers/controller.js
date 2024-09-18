@@ -1,9 +1,11 @@
 //Methods to be executed on routes
 
+import db from "../../mongodb.js";
 import Blog from "../model/model.js";
+import { ObjectId } from "mongodb";
 
 //posts
-const posts = async (req, res) => {
+const create = async (req, res) => {
   const blog = new Blog({
     title: req.body.title,
     content: req.body.content,
@@ -23,4 +25,24 @@ const method2 = (req, res) => {
   res.send("Hello, welcome to my app, second method");
 };
 
-export { posts, method2 };
+const update = async (req, res) => {
+  try {
+    console.log(req.body);
+    console.log(req.params);
+    const { id } = req.params;
+    const blogs = db().collection("blogs");
+    const filter = { _id: new ObjectId(id) };
+    const updatedDoc = {
+      $set: req.body,
+    };
+    const result = await blogs.findOneAndUpdate(filter, updatedDoc, {
+      returnDocument: "after",
+    });
+    res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json(err);
+  }
+};
+
+export { create, update, method2 };
