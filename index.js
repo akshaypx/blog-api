@@ -1,15 +1,23 @@
 //module imports
 import express from "express";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 
 //file imports
 import router from "./src/routes/routes.js";
-import db from "./mongodb.js";
 
 //loading env file
 dotenv.config();
 
-db();
+const mongoString = process.env.MONGODB_URI;
+mongoose.connect(mongoString);
+const database = mongoose.connection;
+database.on("error", (err) => {
+  console.log(err);
+});
+database.once("connected", () => {
+  console.log("Database connected");
+});
 
 //express app
 const app = express();

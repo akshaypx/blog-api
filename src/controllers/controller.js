@@ -1,8 +1,5 @@
 //Methods to be executed on routes
-
-import db from "../../mongodb.js";
 import Blog from "../model/model.js";
-import { ObjectId } from "mongodb";
 
 //posts
 const create = async (req, res) => {
@@ -20,29 +17,54 @@ const create = async (req, res) => {
   }
 };
 
-//method2
-const method2 = (req, res) => {
-  res.send("Hello, welcome to my app, second method");
-};
-
+//update a post
 const update = async (req, res) => {
+  const { id } = req.params;
+  const blog = req.body;
   try {
-    console.log(req.body);
-    console.log(req.params);
-    const { id } = req.params;
-    const blogs = db().collection("blogs");
-    const filter = { _id: new ObjectId(id) };
-    const updatedDoc = {
-      $set: req.body,
-    };
-    const result = await blogs.findOneAndUpdate(filter, updatedDoc, {
-      returnDocument: "after",
+    const newBlog = await Blog.findByIdAndUpdate(id, blog, {
+      returnOriginal: "after",
     });
-    res.status(200).json(result);
+    res.status(200).json(newBlog);
   } catch (err) {
     console.log(err);
     res.status(400).json(err);
   }
 };
 
-export { create, update, method2 };
+//delete post
+const deleteBlog = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deleted = await Blog.findByIdAndDelete(id);
+    res.status(200).json(deleted);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json(err);
+  }
+};
+
+//get one post
+const getOneBlog = async (req, res) => {
+  console.log("getOneBlog");
+  const { id } = req.params;
+  console.log("id is - ", id);
+  try {
+    const blog = await Blog.findById(id);
+    res.status(200).json(blog);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+};
+
+//get all posts
+const getAllBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find({});
+    res.status(200).json(blogs);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export { create, update, deleteBlog, getOneBlog, getAllBlogs };
