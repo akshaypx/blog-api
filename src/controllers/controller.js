@@ -59,9 +59,18 @@ const getOneBlog = async (req, res) => {
 
 //get all posts
 const getAllBlogs = async (req, res) => {
+  const { term } = req.query;
+  console.log("Search term-", term);
   try {
-    const blogs = await Blog.find({});
-    res.status(200).json(blogs);
+    if (term) {
+      console.log("searching term...");
+      const blogs = await Blog.find({ $text: { $search: term } });
+      res.status(200).json(blogs);
+    } else {
+      console.log("returning all blogs...");
+      const blogs = await Blog.find({});
+      res.status(200).json(blogs);
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
