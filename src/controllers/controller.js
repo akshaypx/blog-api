@@ -25,6 +25,7 @@ const update = async (req, res) => {
     const newBlog = await Blog.findByIdAndUpdate(id, blog, {
       returnOriginal: "after",
     });
+    if (!newBlog) res.status(404).json({ message: "Not found" });
     res.status(200).json(newBlog);
   } catch (err) {
     console.log(err);
@@ -37,6 +38,7 @@ const deleteBlog = async (req, res) => {
   const { id } = req.params;
   try {
     const deleted = await Blog.findByIdAndDelete(id);
+    if (!deleted) res.status(404).json({ message: "Not found" });
     res.status(200).json(deleted);
   } catch (err) {
     console.log(err);
@@ -51,6 +53,7 @@ const getOneBlog = async (req, res) => {
   console.log("id is - ", id);
   try {
     const blog = await Blog.findById(id);
+    if (!blog) res.status(404).json({ message: "Not found" });
     res.status(200).json(blog);
   } catch (err) {
     res.status(400).json(err);
@@ -62,15 +65,14 @@ const getAllBlogs = async (req, res) => {
   const { term } = req.query;
   console.log("Search term-", term);
   try {
+    let blogs = {};
     if (term) {
-      console.log("searching term...");
-      const blogs = await Blog.find({ $text: { $search: term } });
-      res.status(200).json(blogs);
+      blogs = await Blog.find({ $text: { $search: term } });
     } else {
-      console.log("returning all blogs...");
-      const blogs = await Blog.find({});
-      res.status(200).json(blogs);
+      blogs = await Blog.find({});
     }
+    if (!blogs) res.status(404).json({ message: "No blogs" });
+    res.status(200).json(blogs);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
